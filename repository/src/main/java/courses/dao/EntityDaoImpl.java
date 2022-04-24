@@ -4,9 +4,12 @@ import courses.util.HibernateUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.List;
 
-public class EntityDaoImpl<T> implements EntityDao {
+public class EntityDaoImpl<T,K> implements EntityDao {
 
     private EntityManager em;
     private Class<T> clazz;
@@ -25,27 +28,20 @@ public class EntityDaoImpl<T> implements EntityDao {
     }
 
     @Override
-    public <T> void delete(T object) {
-        em = HibernateUtil.getEntityManager();
-        em.getTransaction().begin();
-        try {
-            em.remove(object);
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            System.out.println("This element is absent in table");
-        }
-        em.close();
+    public <T> void delete(T object) throws InvocationTargetException,
+            NoSuchMethodException, IllegalAccessException, SQLException {
+        deleteById(getIdOfObject(object));
     }
 
     @Override
-    public <T> void deleteById(T id) {
+    public <T> void deleteById(T id) throws SQLException {
         em = HibernateUtil.getEntityManager();
         em.getTransaction().begin();
         try {
-            em.remove(em.find(clazz, id));
-            em.getTransaction().commit();
+        em.remove(em.find(clazz, id));
+        em.getTransaction().commit();
         } catch (Exception e) {
-            System.out.println("This element is absent in table");
+            System.out.println("This element is absent in table or could not be deleted");
         }
         em.close();
     }
@@ -60,26 +56,22 @@ public class EntityDaoImpl<T> implements EntityDao {
     }
 
     @Override
-    public <T> void updateById(int id, T object) {
-        em = HibernateUtil.getEntityManager();
-        try {
-            T obj = (T) clazz.getConstructor().newInstance();
-
-            em.merge(object);
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            System.out.println("This element is absent in table");
-        }
-        em.close();
-    }
-
-    @Override
     public void select() {
         em = HibernateUtil.getEntityManager();
+        System.out.println("@@@@@@@@@@@" + clazz.getSimpleName());
         String queryString = "SELECT e FROM " + clazz.getSimpleName() + " e";
         Query query = em.createQuery(queryString);
         List list = query.getResultList();
         list.forEach(System.out::println);
         em.close();
+    }
+
+    private <T>  K getIdOfObject(T object)
+            throws NoSuchMethodException, InvocationTargetException,
+            IllegalAccessException {
+        Method method = object.getClass().getMethod("getId");
+        K id = (K) method.invoke(object);
+        System.out.println("id = " + id);
+        return id;
     }
 }
