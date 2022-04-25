@@ -1,19 +1,13 @@
 package managment;
 
 import courses.dao.EntityDaoImpl;
-import courses.entity.Course;
-import courses.entity.Mark;
-import courses.entity.Person;
-import courses.entity.Student;
-import courses.entity.Task;
-import courses.entity.Teacher;
+import courses.entity.*;
+import courses.util.HibernateUtil;
 
-import java.lang.reflect.InvocationTargetException;
+import javax.persistence.EntityManager;
+import java.sql.SQLException;
 import java.util.Set;
 
-/**
- * Hello world!
- */
 public class Manager {
     public static void main(String[] args) {
 
@@ -27,7 +21,7 @@ public class Manager {
                 .hours("150")
                 .build();
 
-        EntityDaoImpl daoCourse = new EntityDaoImpl(Course.class);
+        EntityDaoImpl<? extends Course, ? extends Object> daoCourse = new EntityDaoImpl<>(Course.class);
         daoCourse.insert(course1);
         daoCourse.insert(course2);
         daoCourse.select();
@@ -44,7 +38,7 @@ public class Manager {
                 .courses(Set.of(course1))
                 .build();
 
-        EntityDaoImpl daoStudents = new EntityDaoImpl(Student.class);
+        EntityDaoImpl<? extends Person, ?> daoStudents = new EntityDaoImpl<>(Student.class);
         daoStudents.insert(student1);
         daoStudents.insert(student2);
         daoStudents.select();
@@ -61,7 +55,7 @@ public class Manager {
                 .courses(Set.of(course1))
                 .build();
 
-        EntityDaoImpl daoTeacher = new EntityDaoImpl(Teacher.class);
+        EntityDaoImpl<? extends Person, ?> daoTeacher = new EntityDaoImpl<>(Teacher.class);
         daoTeacher.insert(teacher1);
         daoTeacher.insert(teacher2);
         daoTeacher.select();
@@ -79,7 +73,7 @@ public class Manager {
                 .mark(7)
                 .build();
 
-        EntityDaoImpl daoMark = new EntityDaoImpl(Mark.class);
+        EntityDaoImpl<? extends Mark, ?> daoMark = new EntityDaoImpl<>(Mark.class);
         daoMark.insert(mark1);
         daoMark.insert(mark2);
         daoMark.insert(mark3);
@@ -99,7 +93,7 @@ public class Manager {
                 //   .mark(mark1)
                 .build();
 
-        EntityDaoImpl daoTask = new EntityDaoImpl(Task.class);
+        EntityDaoImpl<? extends Task, ?> daoTask = new EntityDaoImpl<>(Task.class);
         daoTask.insert(task1);
         daoTask.insert(task2);
         daoTask.select();

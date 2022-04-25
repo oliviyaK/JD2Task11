@@ -1,36 +1,27 @@
 package courses.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.Hibernate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
-@Table(name = "MARKS")
+@Table(name = "marks")
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 @Builder
-@ToString(exclude = "tasks")
 public class Mark implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Integer id;
 
     @Column(name = "mark")
     private int mark;
@@ -39,5 +30,19 @@ public class Mark implements Serializable {
     private String review;
 
     @OneToMany(mappedBy = "mark")
+    @ToString.Exclude
     private Set<Task> tasks = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Mark mark = (Mark) o;
+        return id != null && Objects.equals(id, mark.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
