@@ -12,7 +12,7 @@ import java.util.List;
 public class EntityDaoImpl<T,K> implements EntityDao {
 
     private EntityManager em;
-    private Class<T> clazz;
+    private final Class<T> clazz;
 
     public EntityDaoImpl(Class<T> clazz) {
         this.clazz = clazz;
@@ -34,7 +34,7 @@ public class EntityDaoImpl<T,K> implements EntityDao {
     }
 
     @Override
-    public <T> void deleteById(T id) throws SQLException {
+    public <T> void deleteById(T id) {
         em = HibernateUtil.getEntityManager();
         em.getTransaction().begin();
         try {

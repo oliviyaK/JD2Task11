@@ -1,32 +1,50 @@
 package courses.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.Columns;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
-@ToString(exclude = "courses")
 @Entity
-@Table(name = "STUDENT")
+@Table(name = "student")
 public class Student extends Person implements Serializable  {
 
     @ManyToMany(cascade = CascadeType.MERGE)
-    @JoinTable(name = "stusents_courses", joinColumns = {@JoinColumn(name = "id_student")},
+    @JoinTable(name = "students_courses", joinColumns = {@JoinColumn(name = "id_student")},
             inverseJoinColumns = {@JoinColumn(name = "id_course")}
     )
+    @ToString.Exclude
     private Set<Course> courses = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Student student = (Student) o;
+        return getId() != null && Objects.equals(getId(), student.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + getId() +
+                ", name='" + getName() + '\'' +
+                ", surname='" + getSurname() + '\'' +
+                '}';
+    }
 }
